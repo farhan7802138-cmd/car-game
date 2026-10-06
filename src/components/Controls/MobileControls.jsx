@@ -10,11 +10,13 @@ export function MobileControls() {
 
   if (gameState !== 'playing') return null;
 
-  // Multi-touch Pointer Event Helpers
+  // Multi-touch Pointer Event Helpers with full safety and touch-release detection
   const makePointerHandlers = (controlKey) => ({
     onPointerDown: (e) => {
       e.preventDefault();
-      e.currentTarget.setPointerCapture(e.pointerId);
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch (err) {}
       setTouchControl(controlKey, true);
     },
     onPointerUp: (e) => {
@@ -27,6 +29,12 @@ export function MobileControls() {
     onPointerCancel: (e) => {
       e.preventDefault();
       setTouchControl(controlKey, false);
+    },
+    onPointerLeave: () => {
+      setTouchControl(controlKey, false);
+    },
+    onTouchStart: (e) => {
+      e.stopPropagation();
     },
   });
 
@@ -45,14 +53,18 @@ export function MobileControls() {
             <button
               className="steer-btn steer-btn-left"
               {...makePointerHandlers('left')}
+              type="button"
+              aria-label="Steer Left"
             >
-              <ChevronLeft size={36} />
+              <ChevronLeft size={34} />
             </button>
             <button
               className="steer-btn steer-btn-right"
               {...makePointerHandlers('right')}
+              type="button"
+              aria-label="Steer Right"
             >
-              <ChevronRight size={36} />
+              <ChevronRight size={34} />
             </button>
           </div>
         )}
@@ -60,21 +72,25 @@ export function MobileControls() {
 
       {/* ================= RIGHT CONTROLS ================= */}
       <div className="mobile-right-controls">
-        {/* Secondary Action Buttons (Handbrake + Nitro) */}
+        {/* Secondary Action Buttons (Nitro + Handbrake Drift) */}
         <div className="action-buttons-col">
           <button
             className="mobile-action-btn nitro-action-btn"
             {...makePointerHandlers('nitro')}
+            type="button"
+            aria-label="Nitro Boost"
           >
-            <Flame size={24} />
+            <Flame size={20} />
             <span>NITRO</span>
           </button>
 
           <button
             className="mobile-action-btn handbrake-action-btn"
             {...makePointerHandlers('handbrake')}
+            type="button"
+            aria-label="Handbrake Drift"
           >
-            <Disc size={24} />
+            <Disc size={20} />
             <span>DRIFT</span>
           </button>
         </div>
@@ -85,6 +101,8 @@ export function MobileControls() {
           <button
             className="pedal-btn brake-pedal"
             {...makePointerHandlers('backward')}
+            type="button"
+            aria-label="Brake or Reverse"
           >
             <div className="pedal-treads">
               <span />
@@ -98,6 +116,8 @@ export function MobileControls() {
           <button
             className="pedal-btn gas-pedal"
             {...makePointerHandlers('forward')}
+            type="button"
+            aria-label="Accelerate"
           >
             <div className="pedal-treads">
               <span />

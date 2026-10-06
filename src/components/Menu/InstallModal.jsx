@@ -1,9 +1,11 @@
 import React from 'react';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
-import { Download, X, Share, Smartphone, Monitor, CheckCircle, ExternalLink, Sparkles } from 'lucide-react';
+import { Download, X, Share, Smartphone, CheckCircle, Sparkles } from 'lucide-react';
+import { getMobilePlatform } from '../../utils/device';
 
 export function InstallModal({ onClose }) {
-  const { isInstalled, promptInstall, platform, hasNativePrompt } = usePWAInstall();
+  const { isInstalled, promptInstall, hasNativePrompt } = usePWAInstall();
+  const mobilePlatform = getMobilePlatform();
 
   const handleInstallClick = async () => {
     if (hasNativePrompt) {
@@ -24,22 +26,22 @@ export function InstallModal({ onClose }) {
               <Download size={20} className="text-cyan" />
             </div>
             <div>
-              <h3>INSTALL APEX DRIFT 3D</h3>
-              <p className="install-sub-text">Play anytime with zero downloads or app store required</p>
+              <h3>DOWNLOAD / INSTALL APP</h3>
+              <p className="install-sub-text">Add to your home screen for fullscreen mobile gaming</p>
             </div>
           </div>
-          <button className="close-btn" onClick={onClose}>
+          <button className="close-btn" onClick={onClose} type="button">
             <X size={20} />
           </button>
         </div>
 
-        {/* Already Installed Status */}
+        {/* Already Installed */}
         {isInstalled ? (
           <div className="already-installed-box">
             <CheckCircle size={32} className="text-emerald" />
             <h4>App is already installed!</h4>
             <p>
-              You can launch <strong>Apex Drift 3D</strong> directly from your device home screen or app drawer, or continue playing right here in your browser.
+              You can open <strong>Apex Drift 3D</strong> directly from your phone's home screen or app drawer, or keep playing directly here in your mobile browser.
             </p>
           </div>
         ) : (
@@ -47,16 +49,16 @@ export function InstallModal({ onClose }) {
             {/* Native 1-Click Install Button if supported */}
             {hasNativePrompt && (
               <div className="native-install-section">
-                <button className="native-install-big-btn" onClick={handleInstallClick}>
+                <button className="native-install-big-btn" onClick={handleInstallClick} type="button">
                   <Download size={22} />
-                  <span>INSTALL NOW (1-CLICK)</span>
+                  <span>TAP TO INSTALL APP (1-CLICK)</span>
                 </button>
                 <div className="or-divider"><span>OR FOLLOW STEPS BELOW</span></div>
               </div>
             )}
 
-            {/* Platform Specific Guides */}
-            {platform === 'ios' && (
+            {/* iOS / iPhone / iPad Guide */}
+            {mobilePlatform === 'ios' ? (
               <div className="platform-guide-card ios-guide">
                 <div className="guide-header">
                   <Smartphone size={18} className="text-cyan" />
@@ -66,7 +68,7 @@ export function InstallModal({ onClose }) {
                   <div className="step-item">
                     <div className="step-number">1</div>
                     <div className="step-desc">
-                      Tap the <strong>Share</strong> button <Share size={14} style={{ display: 'inline', verticalAlign: 'middle', margin: '0 2px' }} /> at the bottom or top of Safari.
+                      Tap the <strong>Share</strong> button <Share size={14} style={{ display: 'inline', verticalAlign: 'middle', margin: '0 2px' }} /> in the bottom bar of Safari.
                     </div>
                   </div>
                   <div className="step-item">
@@ -78,24 +80,23 @@ export function InstallModal({ onClose }) {
                   <div className="step-item">
                     <div className="step-number">3</div>
                     <div className="step-desc">
-                      Tap <strong>Add</strong> in the top-right corner. The app icon will appear on your home screen!
+                      Tap <strong>Add</strong> in the top-right corner. The app will be installed on your phone!
                     </div>
                   </div>
                 </div>
               </div>
-            )}
-
-            {platform === 'android' && (
+            ) : (
+              /* Android Guide */
               <div className="platform-guide-card android-guide">
                 <div className="guide-header">
                   <Smartphone size={18} className="text-emerald" />
-                  <span>INSTALL ON ANDROID (CHROME / BROWSER)</span>
+                  <span>INSTALL ON ANDROID (CHROME)</span>
                 </div>
                 <div className="step-list">
                   <div className="step-item">
                     <div className="step-number">1</div>
                     <div className="step-desc">
-                      Tap the <strong>three dots menu (⋮)</strong> in the top-right corner of Chrome.
+                      Tap the <strong>three dots (⋮)</strong> menu in the top-right corner of Chrome.
                     </div>
                   </div>
                   <div className="step-item">
@@ -107,47 +108,18 @@ export function InstallModal({ onClose }) {
                   <div className="step-item">
                     <div className="step-number">3</div>
                     <div className="step-desc">
-                      Confirm by tapping <strong>Install</strong>. It installs instantly!
+                      Tap <strong>Install</strong> to add the app to your phone.
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {platform === 'desktop' && (
-              <div className="platform-guide-card desktop-guide">
-                <div className="guide-header">
-                  <Monitor size={18} className="text-cyan" />
-                  <span>INSTALL ON PC / LAPTOP (CHROME / EDGE)</span>
-                </div>
-                <div className="step-list">
-                  <div className="step-item">
-                    <div className="step-number">1</div>
-                    <div className="step-desc">
-                      Look at the top URL address bar of your browser on the right.
-                    </div>
-                  </div>
-                  <div className="step-item">
-                    <div className="step-number">2</div>
-                    <div className="step-desc">
-                      Click the <strong>Install App icon (⊕ or computer monitor)</strong>.
-                    </div>
-                  </div>
-                  <div className="step-item">
-                    <div className="step-number">3</div>
-                    <div className="step-desc">
-                      Click <strong>Install</strong> to open the game as a dedicated fullscreen desktop app!
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Seamless Dual Access Benefit Pill */}
+            {/* Seamless Web vs App Option Clarification */}
             <div className="install-perks-pill">
               <Sparkles size={16} className="text-amber" />
               <span>
-                <strong>Play Both Ways:</strong> Play in your browser whenever you want, OR open your installed app from the home screen for fullscreen gaming with zero address bar!
+                <strong>Play Either Way:</strong> You can play directly on this website in your browser anytime, OR open the installed app from your home screen for fullscreen gaming with zero browser address bars!
               </span>
             </div>
           </div>
@@ -155,8 +127,8 @@ export function InstallModal({ onClose }) {
 
         {/* Footer */}
         <div className="modal-footer">
-          <button className="confirm-btn" onClick={onClose}>
-            CONTINUE PLAYING
+          <button className="confirm-btn" onClick={onClose} type="button">
+            CONTINUE PLAYING ON WEBSITE
           </button>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { NitroBar } from './NitroBar';
 import { Minimap } from './Minimap';
 import { ModeOverlays } from './ModeOverlays';
 import { MobileControls } from '../Controls/MobileControls';
+import { isMobileDevice } from '../../utils/device';
 import {
   Pause,
   Camera,
@@ -15,7 +16,6 @@ import {
   VolumeX,
   Maximize,
   Minimize,
-  Sliders,
 } from 'lucide-react';
 
 export function HUD() {
@@ -30,9 +30,16 @@ export function HUD() {
   const isMuted = useGameStore((s) => s.isMuted);
   const showDebug = useGameStore((s) => s.showDebug);
   const fps = useGameStore((s) => s.fps);
-  const setGameState = useGameStore((s) => s.setGameState);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(isMobileDevice());
+    const onResize = () => setIsMobile(isMobileDevice());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     const onFullscreenChange = () => {
@@ -53,7 +60,7 @@ export function HUD() {
   if (gameState !== 'playing') return null;
 
   return (
-    <div className="game-hud-overlay">
+    <div className={`game-hud-overlay ${isMobile ? 'hud-mobile-mode' : 'hud-desktop-mode'}`}>
       {/* ================= TOP NAVIGATION BAR ================= */}
       <div className="hud-top-bar">
         {/* Quick Game Actions (Left) */}
@@ -62,6 +69,7 @@ export function HUD() {
             className="hud-action-btn"
             onClick={pauseGame}
             title="Pause Game (Esc)"
+            type="button"
           >
             <Pause size={18} />
           </button>
@@ -70,6 +78,7 @@ export function HUD() {
             className="hud-action-btn"
             onClick={switchCamera}
             title="Switch Camera (C)"
+            type="button"
           >
             <Camera size={18} />
           </button>
@@ -78,6 +87,7 @@ export function HUD() {
             className="hud-action-btn"
             onClick={resetCar}
             title="Reset / Respawn Car (R)"
+            type="button"
           >
             <RotateCcw size={18} />
           </button>
@@ -86,6 +96,7 @@ export function HUD() {
             className="hud-action-btn"
             onClick={toggleDayNight}
             title="Toggle Day / Night"
+            type="button"
           >
             {isNight ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -94,6 +105,7 @@ export function HUD() {
             className="hud-action-btn"
             onClick={toggleMute}
             title="Toggle Audio Mute"
+            type="button"
           >
             {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
           </button>
@@ -102,6 +114,7 @@ export function HUD() {
             className="hud-action-btn"
             onClick={toggleFullscreen}
             title="Toggle Fullscreen"
+            type="button"
           >
             {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
           </button>
@@ -127,14 +140,14 @@ export function HUD() {
       {/* ================= MODE SPECIFIC OVERLAYS ================= */}
       <ModeOverlays />
 
-      {/* ================= BOTTOM RIGHT TELEMETRY ================= */}
+      {/* ================= TELEMETRY SPEEDOMETER CLUSTER ================= */}
       <div className="hud-bottom-right">
         <NitroBar />
         <SpeedometerGauge />
       </div>
 
-      {/* ================= TOUCH PEDALS & STEERING ================= */}
-      <MobileControls />
+      {/* ================= TOUCH PEDALS & STEERING (MOBILE ONLY) ================= */}
+      {isMobile && <MobileControls />}
     </div>
   );
 }
